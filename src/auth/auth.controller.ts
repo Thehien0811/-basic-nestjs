@@ -1,4 +1,5 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, HttpCode, Post, Res } from '@nestjs/common';
+import { Response } from 'express'; // Import Response type from express
 import { UserDTO } from './dtos/UserDTO';
 import { User } from '.prisma/client';
 import { AuthService } from './auth.service';
@@ -13,7 +14,11 @@ export class AuthController {
   }
 
   @Post('/signup')
-  signup(@Body() body: SignUpDTO): Promise<any> {
-    return this.authService.signup(body);
+  @HttpCode(200)
+  async signup(@Body() body: SignUpDTO, @Res() res: Response): Promise<void> {
+    const { access_token } = await this.authService.signup(body);
+    console.log(access_token)
+    res.setHeader('Authorization', `Bearer ${access_token}`);
+    res.json({ message: 'Success' });
   }
 }
