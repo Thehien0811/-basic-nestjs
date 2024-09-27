@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { UserFilter, UserPagination } from './dtos/user.dto';
 import { PrismaService } from 'src/prisma.service';
+import { User } from '@prisma/client';
 
 @Injectable()
 export class UserService {
@@ -42,5 +43,14 @@ export class UserService {
       current_page: page,
       items_per_page: items_per_page,
     };
+  }
+
+  async getDetail(id: number): Promise<User> {
+    const user = await this.prismaService.user.findFirst({
+      where: {
+        id
+      }
+    })
+    return user
   }
 }
