@@ -4,10 +4,11 @@ import { UserDTO } from './dtos/UserDTO';
 import { User } from '.prisma/client';
 import { hash, compare } from 'bcrypt';
 import { SignUpDTO } from './dtos/SignUpDTO';
+import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class AuthService {
-  constructor(private prismaService: PrismaService) {}
+  constructor(private prismaService: PrismaService, private readonly jwtService: JwtService) {}
 
   create = async (user: UserDTO): Promise<User> => {
     let existUser = await this.prismaService.user.findUnique({
@@ -53,6 +54,9 @@ export class AuthService {
       );
     }
 
-    return { message: 'Login successful' };
+    const payload = { sub: user.id, email: user.email}
+    return {
+      access_token: await this.jwtService.signAsync(payload),
+    };
   };
 }
