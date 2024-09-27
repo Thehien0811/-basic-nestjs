@@ -18,6 +18,16 @@ model User {
   email    String    @unique
   password String
   name     String
+  posts    Post[]
   createAt DateTime  @default(now())
   updateAt DateTime? @updatedAt
+}
+
+model Post {
+  id      Int    @id @default(autoincrement())
+  title   String
+  summary String
+  content String @db.LongText
+  owner   User   @relation(fields: [ownerID], references: [id])
+  ownerID Int
 }
